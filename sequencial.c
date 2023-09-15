@@ -27,23 +27,39 @@ int main(int argc, char **argv)
             printf("Erro: arquivo %d inválido!", i + 1);
             exit(0);
         }
-
     }
-
     // Lendo os arquivos
     char temp;
+    char* matrizTexto[argc-1];
+    int bufferSize = 100;
+    int bufferIncremento;
+    
     for (int i = 0; i < argc-1; i++)
     {
+        matrizTexto[i] = (char*) malloc(bufferSize * sizeof(char));
+    }
+    int j;
+
+    for (int i = 0; i < argc-1; i++)
+    {
+        j = 0;
+        bufferIncremento = bufferSize;
         while(!feof(fptr[i]))
         {
+            if (j % bufferSize == 0 && j > 0)
+            {
+                bufferIncremento += bufferSize;
+                matrizTexto[i] = (char*) realloc(matrizTexto[i], bufferIncremento * sizeof(char));
+            }
             temp = fgetc(fptr[i]);
-            printf("%c", temp);
+            matrizTexto[i][j] = temp;
+            j++;
+            printf("%c", matrizTexto[i][j]);
+            //printf("%c", temp);
         }
         printf("\n");
     }
-    
-
-/*
+    /*
     //tranformar os argumentos em int
     int listaDimensoes[argc];
     for (int i = 1; i < argc; i++)
