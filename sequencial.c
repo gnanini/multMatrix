@@ -8,7 +8,6 @@
 
 int main(int argc, char **argv)
 {
-    printf("%d\n", argc);
     // checando o núme de arquivos passados
     if (argc != 3)
     {
@@ -36,7 +35,7 @@ int main(int argc, char **argv)
     
     for (int i = 0; i < argc-1; i++)
     {
-        matrizTexto[i] = (char*) malloc(bufferSize * sizeof(char));
+        matrizTexto[i] = (char*)calloc(bufferSize, sizeof(char));
     }
     int j;
 
@@ -46,7 +45,7 @@ int main(int argc, char **argv)
         bufferIncremento = bufferSize;
         while(!feof(fptr[i]))
         {
-            if (j % bufferSize == 0 && j > 0)
+            if (j % bufferIncremento == 0 && j > 0)
             {
                 bufferIncremento += bufferSize;
                 matrizTexto[i] = (char*) realloc(matrizTexto[i], bufferIncremento * sizeof(char));
@@ -54,9 +53,15 @@ int main(int argc, char **argv)
             temp = fgetc(fptr[i]);
             matrizTexto[i][j] = temp;
             j++;
-            printf("%c", matrizTexto[i][j]);
-            //printf("%c", temp);
+            //printf("%c", matrizTexto[i][j]);
+            //printf("%c_", temp);
         }
+        //printf("\n");
+    }
+    for (int i = 0; i < argc-1; i++)
+    {
+        for (int k = 0; k < j; k++)
+            printf("%c", matrizTexto[i][k]);
         printf("\n");
     }
     /*
