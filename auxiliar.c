@@ -8,6 +8,11 @@
 
 int main(int argc, char **argv)
 {
+    FILE *fp1;
+    FILE *fp2;
+    fp1 = fopen("saveM1", "w");
+    fp2 = fopen("saveM2", "w");
+
     //tranformar os argumentos em int
     int listaDimensoes[argc];
     for (int i = 1; i < argc; i++)
@@ -35,22 +40,22 @@ int main(int argc, char **argv)
         for (int j = 0; j < listaDimensoes[2]; j++)
         {
             m1[i][j] = rand() % 100;
-            printf("%d ", m1[i][j]);
+            fprintf(fp1, "%d ", m1[i][j]);
         }
-        printf("\n");
+        fprintf(fp1, "\n");
     }
-    printf("\n");
+    fclose(fp1);
 
     for (int i = 0; i < listaDimensoes[3]; i++)
     {
         for (int j = 0; j < listaDimensoes[4]; j++)
         {
             m2[i][j] = rand() % 100;
-            printf("%d ", m2[i][j]);
+            fprintf(fp2, "%d ", m2[i][j]);
         }
-        printf("\n");
+        fprintf(fp2, "\n");
     }
-    printf("\n");
+    fclose(fp2);
 
     //começar a multiplicação
     for (int m = 0; m < listaDimensoes[1]; m++)
