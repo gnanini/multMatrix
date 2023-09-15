@@ -8,6 +8,42 @@
 
 int main(int argc, char **argv)
 {
+    printf("%d\n", argc);
+    // checando o núme de arquivos passados
+    if (argc != 3)
+    {
+        printf("Erro: o número de arquivos passados como parâmetro deve ser exatamente 2!");
+    }
+    //ler o arquivo
+    FILE* fptr[argc-1];
+    //nomes dos arquivos passados como argumento
+    for (int i = 0; i < argc-1; i++)
+    {
+        fptr[i] = fopen(argv[i+1], "r");
+
+        //error check
+        if (fptr[i] == NULL)
+        {
+            printf("Erro: arquivo %d inválido!", i + 1);
+            exit(0);
+        }
+
+    }
+
+    // Lendo os arquivos
+    char temp;
+    for (int i = 0; i < argc-1; i++)
+    {
+        while(!feof(fptr[i]))
+        {
+            temp = fgetc(fptr[i]);
+            printf("%c", temp);
+        }
+        printf("\n");
+    }
+    
+
+/*
     //tranformar os argumentos em int
     int listaDimensoes[argc];
     for (int i = 1; i < argc; i++)
@@ -66,5 +102,6 @@ int main(int argc, char **argv)
         }
         printf("\n");
     }
+    */
     return 0;
 }

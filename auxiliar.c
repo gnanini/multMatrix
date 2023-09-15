@@ -17,8 +17,8 @@ int main(int argc, char **argv)
     //error check
     if (listaDimensoes[2] != listaDimensoes[3])
     {
-        printf("impossível multiplicar essas matrizes, número de colunas de m1, diferente do número de linhas de m2\n");
-        return 1;
+        printf("Erro: impossível multiplicar essas matrizes, número de colunas de m1, diferente do número de linhas de m2\n");
+        exit(0);
     }
 
     //criando as matrizes
