@@ -5,19 +5,21 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
 
 int main(int argc, char **argv)
 {
+    int nMatrix = argc - 1;
     // checando o núme de arquivos passados
-    if (argc != 3)
+    if (nMatrix != 2)
     {
         printf("Erro: o número de arquivos passados como parâmetro deve ser exatamente 2!");
     }
     //ler o arquivo
-    FILE* fptr[argc-1];
+    FILE* fptr[nMatrix-1];
     //nomes dos arquivos passados como argumento
-    for (int i = 0; i < argc-1; i++)
+    for (int i = 0; i < nMatrix-1; i++)
     {
         fptr[i] = fopen(argv[i+1], "r");
 
@@ -30,17 +32,17 @@ int main(int argc, char **argv)
     }
     // Lendo os arquivos
     char temp;
-    char* matrizTexto[argc-1];
+    char* matrizTexto[nMatrix-1];
     int bufferSize = 100;
     int bufferIncremento;
     
-    for (int i = 0; i < argc-1; i++)
+    for (int i = 0; i < nMatrix-1; i++)
     {
         matrizTexto[i] = (char*)calloc(bufferSize, sizeof(char));
     }
     int j;
 
-    for (int i = 0; i < argc-1; i++)
+    for (int i = 0; i < nMatrix-1; i++)
     {
         j = 0;
         bufferIncremento = bufferSize;
@@ -56,11 +58,13 @@ int main(int argc, char **argv)
             j++;
         }
         matrizTexto[i][j] = '\0';
+        fclose(fptr[i]);
     }
-    int** matrizes[argc-1]; // é criando um array de matrizes mesmo
-    int lin[argc-1]; // podia ter feito um struct
-    int col[argc-1]; // salvar o tamalho das linhas e colunas como array
-    for (int i = 0; i < argc-1; i++)
+    int** matrizes[nMatrix-1]; // é criando um array de matrizes mesmo
+    int lin[nMatrix-1]; // podia ter feito um struct
+    int col[nMatrix-1]; // salvar o tamanho das linhas e colunas como array
+    //parseando o texto para matrizes de ints
+    for (int i = 0; i < nMatrix-1; i++)
     {
         lin[i] = atoi(strtok(matrizTexto[i], " \n"));
         col[i] = atoi(strtok(NULL, " \n"));
@@ -76,7 +80,7 @@ int main(int argc, char **argv)
             }
         }
     }
-    for (int i = 0; i < argc-1;i++)
+    for (int i = 0; i < nMatrix-1;i++)
     {
         for (j = 0; j < lin[i]; j++)
         {
@@ -97,6 +101,10 @@ int main(int argc, char **argv)
     }
     //criando a resultante
     int resultante[lin[0]][col[1]];
+
+    //Criando as threads
+    int p = atoi(argv[3]);
+    pthread_t threads[p];
     
     //começar a multiplicação
     printf("\n");
@@ -113,5 +121,7 @@ int main(int argc, char **argv)
         }
         printf("\n");
     }
+    free(matrizes[0]);
+    free(matrizes[1]);
     return 0;
 }

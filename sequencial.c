@@ -56,6 +56,7 @@ int main(int argc, char **argv)
             j++;
         }
         matrizTexto[i][j] = '\0';
+        fclose(fptr[i]);
     }
     int** matrizes[argc-1]; // é criando um array de matrizes mesmo
     int lin[argc-1]; // podia ter feito um struct
@@ -113,5 +114,7 @@ int main(int argc, char **argv)
         }
         printf("\n");
     }
+    free(matrizes[0]);
+    free(matrizes[1]);
     return 0;
 }
