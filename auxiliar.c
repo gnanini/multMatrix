@@ -35,6 +35,9 @@ int main(int argc, char **argv)
     time_t t;
     srand((unsigned) time(&t));
 
+    fprintf(fp1, "%d %d", listaDimensoes[1], listaDimensoes[2]);
+    fprintf(fp1, "\n");
+
     for (int i = 0; i < listaDimensoes[1]; i++)
     {
         for (int j = 0; j < listaDimensoes[2]; j++)
@@ -45,6 +48,10 @@ int main(int argc, char **argv)
         fprintf(fp1, "\n");
     }
     fclose(fp1);
+
+
+    fprintf(fp2, "%d %d", listaDimensoes[3], listaDimensoes[4]);
+    fprintf(fp2, "\n");
 
     for (int i = 0; i < listaDimensoes[3]; i++)
     {
