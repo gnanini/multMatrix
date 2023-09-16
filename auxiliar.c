@@ -64,6 +64,7 @@ int main(int argc, char **argv)
     }
     fclose(fp2);
 
+    /* esse arquivo não multiplica
     //começar a multiplicação
     for (int m = 0; m < listaDimensoes[1]; m++)
     {
@@ -78,5 +79,6 @@ int main(int argc, char **argv)
         }
         printf("\n");
     }
+    */
     return 0;
 }

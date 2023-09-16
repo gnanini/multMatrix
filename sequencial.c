@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 int main(int argc, char **argv)
@@ -53,15 +54,39 @@ int main(int argc, char **argv)
             temp = fgetc(fptr[i]);
             matrizTexto[i][j] = temp;
             j++;
-            //printf("%c", matrizTexto[i][j]);
-            //printf("%c_", temp);
         }
-        //printf("\n");
+        matrizTexto[i][j] = '\0';
     }
+    int** matrizes[argc-1]; // é criando um array de matrizes mesmo
+    int lin;
+    int col;
     for (int i = 0; i < argc-1; i++)
     {
-        for (int k = 0; k < j; k++)
-            printf("%c", matrizTexto[i][k]);
+        lin = atoi(strtok(matrizTexto[i], " \n"));
+        col = atoi(strtok(NULL, " \n"));
+        printf("linhas: %d\ncolunas: %d\n", lin, col);
+        matrizes[i] = (int**)calloc(lin, sizeof(int));
+
+        for (j = 0; j < lin; j++)
+        {
+            matrizes[i][j] = (int*)calloc(col, sizeof(int));
+            for (int k = 0; k < col; k++) // criamos e já populamos a matriz
+            {
+                matrizes[i][j][k] = atoi(strtok(NULL, " \n"));
+            }
+        }
+    }
+    for (int i = 0; i < argc-1;i++)
+    {
+        for (j = 0; matrizes[i][j] != NULL; j++)
+        {
+            for (int k = 0; matrizes[i][j][k] != '\0'; k++)
+            {
+                printf ("%d ", matrizes[i][j][k]);
+            }
+            printf("\n");
+        }
+        free(matrizTexto[i]);
         printf("\n");
     }
     /*
