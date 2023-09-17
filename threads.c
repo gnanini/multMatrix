@@ -127,6 +127,12 @@ int main(int argc, char **argv)
         pthread_create(&threads[i], NULL, multMatrix, argumentos);
         argumentos->inicioN += p;
     }
+    //fazer o L, opa... o join
+    for (int i = 0; i < nThreads; i++)
+    {
+        pthread_join(threads[i], NULL);
+    }
+    // freezando
     free(matrizes[0]);
     free(matrizes[1]);
     return 0;
@@ -139,32 +145,35 @@ void* multMatrix(void* arg)
     int linha = arguments->inicioM;
     
     // Criando a resultante com malloc
-    int** resultante;
-    resultante = (int**)calloc(arguments->lin[0], sizeof(int**));
-    for (int j = 0; j < arguments->lin[0]; j++)
-    {
-        resultante[j] = (int*)calloc(arguments->col[1], sizeof(int*));
-        for (int i = 0; i < arguments->col[1]; i++)
-        {
-            resultante[j][i] = 0;
-        }
-    }
+    //int** resultante;
+    //resultante = (int**)calloc(arguments->lin[0], sizeof(int**));
+    //for (int j = 0; j < arguments->lin[0]; j++)
+    //{
+    //    resultante[j] = (int*)calloc(arguments->col[1], sizeof(int*));
+    //    for (int i = 0; i < arguments->col[1]; i++)
+    //    {
+    //        resultante[j][i] = 0;
+    //    }
+    //}
     // achando o ponto certo
     int n = arguments->inicioN;
     printf("n = %d\n", n);
+    int soma;
     for (int i = 0; i < arguments->p; i++)
     {
         if (i + n >= arguments->col[1])
         {
             linha++;
         } 
-
+        soma = 0;
         // itera no que é comum às duas matrizes, já se sabe a coluna e a linha
         for (int j = 0; j < arguments->col[0]; j++) 
         {
-            resultante[linha][i + n % arguments->col[1]] += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][i + n % arguments->col[1]]; 
+            //resultante[linha][i + n % arguments->col[1]] += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][i + n % arguments->col[1]]; 
+            soma += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][i + n % arguments->col[1]]; 
         }
-        printf("%d ", resultante[linha][i + n % arguments->col[1]]);
+        //printf("%d ", resultante[linha][i + n % arguments->col[1]]);
+        printf("%d ", soma);
     }
     printf("\n");
     //sleep(1);
