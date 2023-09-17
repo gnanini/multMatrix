@@ -7,8 +7,16 @@
 #include <string.h>
 #include <pthread.h>
 
+struct argMultMatrix {
+    int*** matrizes;
+    int* lin;
+	int* col;
+	int p;
+	int inicioM;
+	int inicioN;
+};
 
-void multMatrix(int*** matrizes, int* lin, int* col, int p, int inicioM, int inicioN, int** resultante);
+void* multMatrix(void* arg);
 
 int main(int argc, char **argv)
 {
@@ -106,40 +114,75 @@ int main(int argc, char **argv)
 
     //Criando as threads
     int p = atoi(argv[3]);
-    pthread_t threads[lin[0] * col[1] / p];
+    int nThreads = lin[0] * col[1] / p;
+    pthread_t threads[nThreads];
     char tempArray[p][20];
-    
-    free(matrizes[0]);
-    free(matrizes[1]);
-    return 0;
-}
+
+    int inicioLin = 0;
+    int inicioCol = 0;
+    struct argMultMatrix arg = {matrizes, lin, col, p, inicioLin, inicioCol};
+    struct argMultMatrix* argumentos = &arg ;
+
+    for (int i = 0; i < nThreads; i++)
+    {
+            if (inicioCol > col[1] && inicioLin < lin[0]) //se a linha estourar, vamos pra próxima linha
+            {
+                inicioLin++;
+                inicioCol = inicioCol % col[1]; //a linha não pode ser maior do que a linha
+            } 
+            pthread_create(&threads[i], NULL, multMatrix, argumentos);
+            inicioCol += p;
+        }
+        // se o número de elementos não for divisível por p
+        if ((lin[0] * col[1]) % p != 0)
+        {
+            argumentos->p = (lin[0] * col[1]) % p;
+            pthread_create(&threads[p], NULL, multMatrix, argumentos);
+        }
+
+        free(matrizes[0]);
+        free(matrizes[1]);
+        return 0;
+    }
+    /*
+
+    esse código vai ler na matriz p elementos e pular de linha quando inicioN + i > tamLinha
+a função multMatrix vai retornar as coordenadas pro próxima
+*/
+
 /*
-
-esse código vai ler na matriz p elementos e pular de linha quando inicioN + i > tamLinha
-
-for (int i = 0; i < p; i++)
-if (inicioN + i > tamLinha){
-    inicioM++;
-}
 chama a thread e roda o código pra pegar o próximo início, mas sem for
+
 
 variavel[inicioM][iniciN + i % tamanhoLinha]
 */
-void multMatrix(int*** matrizes, int* lin, int* col, int p, int inicioM, int inicioN, int** resultante)
+void* multMatrix(void* arg)
 {
+    struct argMultMatrix* arguments = (struct argMultMatrix *) arg;
+    //for (int i = 0; i < p; i++)
+    //{
+    //    if (inicioN + i > lin[tem que iterar só na resultante])
+    //    {
+    //        inicioM++;
+    //    } 
+    //}
     //começar a multiplicação
+    int resultante[arguments->lin[0]][arguments->col[1]];
     printf("\n");
-    for (int m = 0; m < lin[0]; m++)
+    for (int m = 0; m < arguments->lin[0]; m++)
     {
-        for (int n = 0; n < col[1]; n++)
+        for (int n = 0; n < arguments->col[1]; n++)
         {
             resultante[m][n] = 0;
-            for (int k = 0; k < lin[1]; k++) // podia ser listaDimensoes[2]
+            for (int k = 0; k < arguments->lin[1]; k++) // podia ser listaDimensoes[2]
             {
-                resultante[m][n] += matrizes[0][m][k] * matrizes[1][k][n]; 
+                resultante[m][n] += arguments->matrizes[0][m][k] * arguments->matrizes[1][k][n]; 
             }
             printf("%d\t", resultante[m][n]);
         }
         printf("\n");
+        pthread_exit(NULL);
     }
+    void* zero;
+    return zero;
 }
