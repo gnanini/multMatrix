@@ -8,7 +8,6 @@
 #include <pthread.h>
 
 
-
 void multMatrix(int*** matrizes, int* lin, int* col, int p, int inicioM, int inicioN, int** resultante);
 
 int main(int argc, char **argv)
@@ -20,9 +19,9 @@ int main(int argc, char **argv)
         printf("Erro: o número de arquivos passados como parâmetro deve ser exatamente 2!");
     }
     //ler o arquivo
-    FILE* fptr[nMatrix-1];
+    FILE* fptr[nMatrix];
     //nomes dos arquivos passados como argumento
-    for (int i = 0; i < nMatrix-1; i++)
+    for (int i = 0; i < nMatrix; i++)
     {
         fptr[i] = fopen(argv[i+1], "r");
 
@@ -30,22 +29,22 @@ int main(int argc, char **argv)
         if (fptr[i] == NULL)
         {
             printf("Erro: arquivo %d inválido!", i + 1);
-            exit(0);
+            exit(1);
         }
     }
     // Lendo os arquivos
     char temp;
-    char* matrizTexto[nMatrix-1];
+    char* matrizTexto[nMatrix];
     int bufferSize = 100;
     int bufferIncremento;
     
-    for (int i = 0; i < nMatrix-1; i++)
+    for (int i = 0; i < nMatrix; i++)
     {
         matrizTexto[i] = (char*)calloc(bufferSize, sizeof(char));
     }
     int j;
 
-    for (int i = 0; i < nMatrix-1; i++)
+    for (int i = 0; i < nMatrix; i++)
     {
         j = 0;
         bufferIncremento = bufferSize;
@@ -63,27 +62,27 @@ int main(int argc, char **argv)
         matrizTexto[i][j] = '\0';
         fclose(fptr[i]);
     }
-    int** matrizes[nMatrix-1]; // é criando um array de matrizes mesmo
-    int lin[nMatrix-1]; // podia ter feito um struct
-    int col[nMatrix-1]; // salvar o tamanho das linhas e colunas como array
+    int** matrizes[nMatrix]; // é criando um array de matrizes mesmo
+    int lin[nMatrix]; // podia ter feito um struct
+    int col[nMatrix]; // salvar o tamanho das linhas e colunas como array
     //parseando o texto para matrizes de ints
-    for (int i = 0; i < nMatrix-1; i++)
+    for (int i = 0; i < nMatrix; i++)
     {
         lin[i] = atoi(strtok(matrizTexto[i], " \n"));
         col[i] = atoi(strtok(NULL, " \n"));
         printf("linhas: %d\ncolunas: %d\n", lin[i], col[i]);
-        matrizes[i] = (int**)calloc(lin[i], sizeof(int));
+        matrizes[i] = (int**)calloc(lin[i], sizeof(int**));
 
         for (j = 0; j < lin[i]; j++)
         {
-            matrizes[i][j] = (int*)calloc(col[i], sizeof(int));
+            matrizes[i][j] = (int*)calloc(col[i], sizeof(int*));
             for (int k = 0; k < col[i]; k++) // criamos e já populamos a matriz
             {
                 matrizes[i][j][k] = atoi(strtok(NULL, " \n"));
             }
         }
     }
-    for (int i = 0; i < nMatrix-1;i++)
+    for (int i = 0; i < nMatrix;i++)
     {
         for (j = 0; j < lin[i]; j++)
         {
@@ -100,21 +99,32 @@ int main(int argc, char **argv)
     if (col[0] != lin[1])
     {
         printf("impossível multiplicar essas matrizes, número de colunas de m1, diferente do número de linhas de m2\n");
-        return 1;
+         exit(1);
     }
     //criando a resultante
     int resultante[lin[0]][col[1]];
 
     //Criando as threads
     int p = atoi(argv[3]);
-    pthread_t threads[p];
+    pthread_t threads[lin[0] * col[1] / p];
+    char tempArray[p][20];
     
     free(matrizes[0]);
     free(matrizes[1]);
     return 0;
 }
+/*
 
+esse código vai ler na matriz p elementos e pular de linha quando inicioN + i > tamLinha
 
+for (int i = 0; i < p; i++)
+if (inicioN + i > tamLinha){
+    inicioM++;
+}
+chama a thread e roda o código pra pegar o próximo início, mas sem for
+
+variavel[inicioM][iniciN + i % tamanhoLinha]
+*/
 void multMatrix(int*** matrizes, int* lin, int* col, int p, int inicioM, int inicioN, int** resultante)
 {
     //começar a multiplicação
