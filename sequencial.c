@@ -65,7 +65,6 @@ int main(int argc, char **argv)
     {
         lin[i] = atoi(strtok(matrizTexto[i], " \n"));
         col[i] = atoi(strtok(NULL, " \n"));
-        printf("linhas: %d\ncolunas: %d\n", lin[i], col[i]);
         matrizes[i] = (int**)calloc(lin[i], sizeof(int**));
 
         for (j = 0; j < lin[i]; j++)
@@ -79,15 +78,6 @@ int main(int argc, char **argv)
     }
     for (int i = 0; i < argc-1;i++)
     {
-        for (j = 0; j < lin[i]; j++)
-        {
-            for (int k = 0; k < col[i]; k++)
-            {
-                printf ("%d ", matrizes[i][j][k]);
-            }
-            printf("\n");
-        }
-        printf("\n");
         free(matrizTexto[i]);
     }
     //error check
