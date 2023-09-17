@@ -20,11 +20,11 @@ void* multMatrix(void* arg);
 
 int main(int argc, char **argv)
 {
-    int nMatrix = argc - 1;
+    int nMatrix = argc - 2;
     // checando o núme de arquivos passados
-    if (nMatrix != 2)
+    if (nMatrix != 3)
     {
-        printf("Erro: o número de arquivos passados como parâmetro deve ser exatamente 2!");
+        printf("Erro: o número de parâmetros passados diferente de 3!");
     }
     //ler o arquivo
     FILE* fptr[nMatrix];
@@ -92,16 +92,7 @@ int main(int argc, char **argv)
     }
     for (int i = 0; i < nMatrix;i++)
     {
-        for (j = 0; j < lin[i]; j++)
-        {
-            for (int k = 0; k < col[i]; k++)
-            {
-                printf ("%d ", matrizes[i][j][k]);
-            }
-            printf("\n");
-        }
         free(matrizTexto[i]);
-        printf("\n");
     }
     //error check
     if (col[0] != lin[1])
@@ -109,80 +100,73 @@ int main(int argc, char **argv)
         printf("impossível multiplicar essas matrizes, número de colunas de m1, diferente do número de linhas de m2\n");
          exit(1);
     }
-    //criando a resultante
-    int resultante[lin[0]][col[1]];
 
     //Criando as threads
     int p = atoi(argv[3]);
+    printf("p = %d\n", p);
     int nThreads = lin[0] * col[1] / p;
+    printf("nThreads = %d\n", nThreads);
     pthread_t threads[nThreads];
-    char tempArray[p][20];
-
     int inicioLin = 0;
     int inicioCol = 0;
     struct argMultMatrix arg = {matrizes, lin, col, p, inicioLin, inicioCol};
-    struct argMultMatrix* argumentos = &arg ;
+    printf("criou a struct!\n");
+    struct argMultMatrix* argumentos = &arg;
 
     for (int i = 0; i < nThreads; i++)
     {
-            if (inicioCol > col[1] && inicioLin < lin[0]) //se a linha estourar, vamos pra próxima linha
-            {
-                inicioLin++;
-                inicioCol = inicioCol % col[1]; //a linha não pode ser maior do que a linha
-            } 
-            pthread_create(&threads[i], NULL, multMatrix, argumentos);
-            inicioCol += p;
-        }
-        // se o número de elementos não for divisível por p
-        if ((lin[0] * col[1]) % p != 0)
+        printf("iterando no for, i = %d\n", i);
+        if (inicioCol >= col[1] && inicioLin < lin[0]) //se a linha estourar, vamos pra próxima linha e para na penúltima linha
+        {
+            inicioLin++;
+            inicioCol = inicioCol % col[1]; //a linha não pode ser maior do que a linha
+        } 
+        pthread_create(&threads[i], NULL, multMatrix, argumentos);
+        inicioCol += p;
+
+        // se o número de elementos não for divisível por p e for a última linha, vai ser só o resto
+        if (inicioLin == lin[0] - 1 && (lin[0] * col[1]) % p != 0)
         {
             argumentos->p = (lin[0] * col[1]) % p;
             pthread_create(&threads[p], NULL, multMatrix, argumentos);
         }
-
-        free(matrizes[0]);
-        free(matrizes[1]);
-        return 0;
     }
-    /*
 
-    esse código vai ler na matriz p elementos e pular de linha quando inicioN + i > tamLinha
-a função multMatrix vai retornar as coordenadas pro próxima
-*/
-
-/*
-chama a thread e roda o código pra pegar o próximo início, mas sem for
+    free(matrizes[0]);
+    free(matrizes[1]);
+    return 0;
+}
 
 
-variavel[inicioM][iniciN + i % tamanhoLinha]
-*/
 void* multMatrix(void* arg)
 {
+    printf("abriu a thread!\n");
     struct argMultMatrix* arguments = (struct argMultMatrix *) arg;
-    //for (int i = 0; i < p; i++)
-    //{
-    //    if (inicioN + i > lin[tem que iterar só na resultante])
-    //    {
-    //        inicioM++;
-    //    } 
-    //}
-    //começar a multiplicação
-    int resultante[arguments->lin[0]][arguments->col[1]];
-    printf("\n");
-    for (int m = 0; m < arguments->lin[0]; m++)
+    int linha = arguments->inicioM;
+    
+    // Criando a resultante com malloc
+    int** resultante;
+    resultante = (int**)calloc(arguments->lin[0], sizeof(int**));
+    for (int j = 0; j < arguments->lin[0]; j++)
     {
-        for (int n = 0; n < arguments->col[1]; n++)
-        {
-            resultante[m][n] = 0;
-            for (int k = 0; k < arguments->lin[1]; k++) // podia ser listaDimensoes[2]
-            {
-                resultante[m][n] += arguments->matrizes[0][m][k] * arguments->matrizes[1][k][n]; 
-            }
-            printf("%d\t", resultante[m][n]);
-        }
-        printf("\n");
-        pthread_exit(NULL);
+        resultante[j] = (int*)calloc(arguments->col[1], sizeof(int*));
     }
-    void* zero;
-    return zero;
+    // achando o ponto certo
+    for (int i = arguments->inicioN; i < arguments->p; i++)
+    {
+        if (i >= arguments->col[1])
+        {
+            linha++;
+        } 
+        resultante[linha][i % arguments->lin[0]] = 0;
+
+        // itera no que é comum às duas matrizes, já se sabe a coluna e a linha
+        for (int j = 0; j < arguments->col[0]; j++) 
+        {
+            resultante[linha][i % arguments->lin[0]] += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][i % arguments->lin[0]]; 
+        }
+        printf("%d ", resultante[linha][i % arguments->lin[0]]);
+    }
+    printf("\n");
+    pthread_exit(NULL);
 }
