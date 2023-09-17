@@ -1,3 +1,5 @@
+#define __USE_GNU
+#include <sys/resource.h>
 #include <time.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -6,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <sys/time.h>
 
 struct argMultMatrix {
     int*** matrizes;
@@ -102,6 +105,8 @@ int main(int argc, char **argv)
     }
 
     //Criando as threads
+    struct rusage start_usage, end_usage;
+    struct timeval start_time, end_time;
     int p = atoi(argv[3]);
     printf("p = %d\n", p);
     int nThreads = lin[0] * col[1] / p;
@@ -122,6 +127,8 @@ int main(int argc, char **argv)
             inicioCol = inicioCol % col[1]; //a linha não pode ser maior do que a linha
         } 
         pthread_create(&threads[i], NULL, multMatrix, argumentos);
+        getrusage(RUSAGE_THREAD, &start_usage); // pega o começo do uso da cpu
+        gettimeofday(&start_time, NULL); // pega o começo do uso da cpu
         inicioCol += p;
 
         // se o número de elementos não for divisível por p e for a última linha, vai ser só o resto
@@ -129,7 +136,16 @@ int main(int argc, char **argv)
         {
             argumentos->p = (lin[0] * col[1]) % p;
             pthread_create(&threads[p], NULL, multMatrix, argumentos);
+            getrusage(RUSAGE_THREAD, &start_usage);
+            gettimeofday(&start_time, NULL);
         }
+        gettimeofday(&end_time, NULL); // pega o fim do uso da cpu 
+        getrusage(RUSAGE_THREAD, &end_usage); // pega o fim do uso da cpu
+        long long start_microseconds = start_time.tv_sec * 1000000 + start_time.tv_usec;
+        long long end_microseconds = end_time.tv_sec * 1000000 + end_time.tv_usec;
+        long long cpu_time_microseconds = (end_usage.ru_utime.tv_sec * 1000000 + end_usage.ru_utime.tv_usec) - (start_usage.ru_utime.tv_sec * 1000000 + start_usage.ru_utime.tv_usec);
+        
+        printf("CPU time for the thread: %lld microseconds\n", cpu_time_microseconds);
     }
 
     free(matrizes[0]);
