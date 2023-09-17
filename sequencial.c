@@ -66,11 +66,11 @@ int main(int argc, char **argv)
         lin[i] = atoi(strtok(matrizTexto[i], " \n"));
         col[i] = atoi(strtok(NULL, " \n"));
         printf("linhas: %d\ncolunas: %d\n", lin[i], col[i]);
-        matrizes[i] = (int**)calloc(lin[i], sizeof(int));
+        matrizes[i] = (int**)calloc(lin[i], sizeof(int**));
 
         for (j = 0; j < lin[i]; j++)
         {
-            matrizes[i][j] = (int*)calloc(col[i], sizeof(int));
+            matrizes[i][j] = (int*)calloc(col[i], sizeof(int*));
             for (int k = 0; k < col[i]; k++) // criamos e já populamos a matriz
             {
                 matrizes[i][j][k] = atoi(strtok(NULL, " \n"));
@@ -87,8 +87,8 @@ int main(int argc, char **argv)
             }
             printf("\n");
         }
-        free(matrizTexto[i]);
         printf("\n");
+        free(matrizTexto[i]);
     }
     //error check
     if (col[0] != lin[1])
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
         }
         printf("\n");
     }
-    free(matrizes[0]);
-    free(matrizes[1]);
+    //free(matrizes[0]);
+    //free(matrizes[1]);
     return 0;
 }

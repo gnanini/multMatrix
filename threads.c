@@ -8,6 +8,9 @@
 #include <pthread.h>
 
 
+
+void multMatrix(int*** matrizes, int* lin, int* col, int p, int inicioM, int inicioN, int** resultante);
+
 int main(int argc, char **argv)
 {
     int nMatrix = argc - 1;
@@ -106,6 +109,14 @@ int main(int argc, char **argv)
     int p = atoi(argv[3]);
     pthread_t threads[p];
     
+    free(matrizes[0]);
+    free(matrizes[1]);
+    return 0;
+}
+
+
+void multMatrix(int*** matrizes, int* lin, int* col, int p, int inicioM, int inicioN, int** resultante)
+{
     //começar a multiplicação
     printf("\n");
     for (int m = 0; m < lin[0]; m++)
@@ -121,7 +132,4 @@ int main(int argc, char **argv)
         }
         printf("\n");
     }
-    free(matrizes[0]);
-    free(matrizes[1]);
-    return 0;
 }
