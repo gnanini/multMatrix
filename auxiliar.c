@@ -26,16 +26,22 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    //criando as matrizes
-    int m1[listaDimensoes[1]][listaDimensoes[2]]; 
-    int m2[listaDimensoes[3]][listaDimensoes[4]];
+    int **m1 = malloc(sizeof(int *) * listaDimensoes[1]);
+    for (int i = 0; i < listaDimensoes[1]; i++)
+    {
+        m1[i] = malloc(sizeof(int) * listaDimensoes[2]);
+    }
+    int **m2 = malloc(sizeof(int *) * listaDimensoes[3]);
+    for (int i = 0; i < listaDimensoes[3]; i++)
+    {
+        m2[i] = malloc(sizeof(int) * listaDimensoes[4]);
+    }
     
     //populando as matrizes podia fazer uma função, mas assim tá mais simples
     time_t t;
     srand((unsigned) time(&t));
 
-    fprintf(fp1, "%d %d", listaDimensoes[1], listaDimensoes[2]);
-    fprintf(fp1, "\n");
+    fprintf(fp1, "%d %d\n", listaDimensoes[1], listaDimensoes[2]);
 
     for (int i = 0; i < listaDimensoes[1]; i++)
     {
@@ -49,8 +55,7 @@ int main(int argc, char **argv)
     fclose(fp1);
 
 
-    fprintf(fp2, "%d %d", listaDimensoes[3], listaDimensoes[4]);
-    fprintf(fp2, "\n");
+    fprintf(fp2, "%d %d\n", listaDimensoes[3], listaDimensoes[4]);
 
     for (int i = 0; i < listaDimensoes[3]; i++)
     {
