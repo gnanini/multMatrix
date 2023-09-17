@@ -124,14 +124,16 @@ int main(int argc, char **argv)
             argumentos->inicioN = argumentos->inicioN % col[1]; //a linha não pode ser maior do que a linha
             argumentos->p = (lin[0] * col[1]) % p;
         }
+        printf("inicioM = %d\ninicioN = %d\n", argumentos->inicioM, argumentos->inicioN);
         pthread_create(&threads[i], NULL, multMatrix, argumentos);
+        pthread_join(threads[i], NULL);
         argumentos->inicioN += p;
     }
     //fazer o L, opa... o join
-    for (int i = 0; i < nThreads; i++)
-    {
-        pthread_join(threads[i], NULL);
-    }
+    //for (int i = 0; i < nThreads; i++)
+    //{
+    //    pthread_join(threads[i], NULL);
+    //}
     // freezando
     free(matrizes[0]);
     free(matrizes[1]);
@@ -170,7 +172,7 @@ void* multMatrix(void* arg)
         for (int j = 0; j < arguments->col[0]; j++) 
         {
             //resultante[linha][i + n % arguments->col[1]] += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][i + n % arguments->col[1]]; 
-            soma += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][i + n % arguments->col[1]]; 
+            soma += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][(i + n) % arguments->col[1]]; 
         }
         //printf("%d ", resultante[linha][i + n % arguments->col[1]]);
         printf("%d ", soma);
