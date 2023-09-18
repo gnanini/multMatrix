@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     resultante = (int**)calloc(lin[0], sizeof(int**));
     for (int i = 0; i < lin[0]; i++)
     {
-        resultante[i] = (int*)calloc(bufferSize, sizeof(int*));
+        resultante[i] = (int*)calloc(col[1], sizeof(int*));
     }
     //abrindo o arquivo
     char filename[] = "output/sequencial";

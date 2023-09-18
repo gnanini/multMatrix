@@ -11,3 +11,4 @@ processos
 output/threads/*
 output/process/*
 output/sequencial
+sequencial2.c
