@@ -142,6 +142,7 @@ void* multMatrix(void* arg)
     char* id = malloc(sizeof(char) * 10);
     sprintf(id, "%d", THREAD);
     char filename[] = "output/thread_";
+    printf("id = %s\n", id);
     strcat(filename, id);
     printf("%s\n", filename);
     FILE *file;

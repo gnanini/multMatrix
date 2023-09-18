@@ -171,7 +171,6 @@ void multMatrix(void* arg)
         // itera no que é comum às duas matrizes, já se sabe a coluna e a linha
         for (int j = 0; j < arguments->col[0]; j++) 
         {
-            //resultante[linha][i + n % arguments->col[1]] += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][i + n % arguments->col[1]]; 
             soma += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][coluna]; 
         }
         printf("c[%d][%d] %d\n", linha, coluna, soma);

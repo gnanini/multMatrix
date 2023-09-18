@@ -7,7 +7,6 @@
 #include <string.h>
 #include <pthread.h>
 
-
 struct argMultMatrix {
     int*** matrizes;
     int* lin;
@@ -17,9 +16,7 @@ struct argMultMatrix {
 	int inicioC;
 };
 
-int THREAD = 0;
-
-void* multMatrix(void* arg);
+void multMatrix(void* arg);
 
 int main(int argc, char **argv)
 {
@@ -106,24 +103,37 @@ int main(int argc, char **argv)
 
     //Criando as threads
     int p = atoi(argv[3]);
-    int nThreads = lin[0] * col[1] / p;
+    int nProcess = lin[0] * col[1] / p;
     if (lin[0] * col[1] % p != 0)
     {
-        nThreads++;
+        nProcess++;
     }
-    pthread_t threads[nThreads];
+    pid_t pid;
+
     struct argMultMatrix arg = {matrizes, lin, col, p, 0, 0};
     struct argMultMatrix* argumentos = &arg;
 
-    for (int i = 0; i < nThreads; i++)
+    for (int i = 0; i < nProcess; i++)
     {
         if (argumentos->inicioC >= col[1] && argumentos->inicioL < lin[0] - 1) //se a linha estourar, vamos pra próxima linha e para na penúltima linha
         {
             argumentos->inicioL++;
         } 
         argumentos->inicioC = argumentos->inicioC % col[1]; //a linha não pode ser maior do que a linha
-        pthread_create(&threads[i], NULL, multMatrix, argumentos);
-        pthread_join(threads[i], NULL);
+        pid = fork();
+
+        if (pid < 0)
+        {
+            printf("Erro ao criar processo\n");
+        }
+        else if (pid == 0)
+        {
+            multMatrix(argumentos);
+        }
+        else
+        {
+            wait(NULL);
+        }
         argumentos->inicioC += argumentos->p;
     }
     free(matrizes[0]);
@@ -132,20 +142,12 @@ int main(int argc, char **argv)
 }
 
 
-void* multMatrix(void* arg)
+void multMatrix(void* arg)
 {
     struct argMultMatrix* arguments = (struct argMultMatrix *) arg;
     int linha = arguments->inicioL;
     int coluna = arguments->inicioC;
     int soma;
-    THREAD++;
-    char* id = malloc(sizeof(char) * 10);
-    sprintf(id, "%d", THREAD);
-    char filename[] = "output/thread_";
-    strcat(filename, id);
-    printf("%s\n", filename);
-    FILE *file;
-    file = fopen(filename, "w");
 
     clock_t t;
     t = clock();
@@ -156,10 +158,9 @@ void* multMatrix(void* arg)
         {
             t = clock() - t;
             double time_taken = ((double)t)/CLOCKS_PER_SEC;
-            //printf("%fs\n\n", time_taken);
-            fprintf(file, "%fs\n\n", time_taken);
-            fclose(file);
-            pthread_exit(NULL);
+            printf("%fs\n", time_taken);
+            printf("\n");
+            exit(0);
         }
         if (coluna >= arguments->col[1])
         {
@@ -170,18 +171,15 @@ void* multMatrix(void* arg)
         // itera no que é comum às duas matrizes, já se sabe a coluna e a linha
         for (int j = 0; j < arguments->col[0]; j++) 
         {
+            //resultante[linha][i + n % arguments->col[1]] += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][i + n % arguments->col[1]]; 
             soma += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][coluna]; 
         }
+        printf("c[%d][%d] %d\n", linha, coluna, soma);
         coluna++;
-
-        //salvar no arquivo
-        fprintf(file, "c[%d][%d] %d\n", linha, coluna, soma); // armazenando no buffer de string
-        //printf("c[%d][%d] %d\n", linha, coluna, soma);
     }
     t = clock() - t;
     double time_taken = ((double)t)/CLOCKS_PER_SEC;
-    //printf("%fs\n\n", time_taken);
-    fprintf(file, "%fs\n\n", time_taken);
-    fclose(file);
-    pthread_exit(NULL);
+    printf("%fs\n", time_taken);
+    printf("\n");
+    exit(0);
 }
