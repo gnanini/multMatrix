@@ -20,12 +20,12 @@ void* multMatrix(void* arg);
 
 int main(int argc, char **argv)
 {
-    printf("argc = %d\n", argc);
     int nMatrix = argc - 2;
     // checando o núme de arquivos passados
     if (nMatrix != 2)
     {
         printf("Erro: o número de parâmetros passados diferente de 2!");
+        exit(1);
     }
     //ler o arquivo
     FILE* fptr[nMatrix];
@@ -108,28 +108,17 @@ int main(int argc, char **argv)
     {
         nThreads++;
     }
-    printf("nThreads = %d\n", nThreads);
     pthread_t threads[nThreads];
     struct argMultMatrix arg = {matrizes, lin, col, p, 0, 0};
     struct argMultMatrix* argumentos = &arg;
 
     for (int i = 0; i < nThreads; i++)
     {
-        printf("thread %d\n", i);
         if (argumentos->inicioC >= col[1] && argumentos->inicioL < lin[0] - 1) //se a linha estourar, vamos pra próxima linha e para na penúltima linha
         {
             argumentos->inicioL++;
         } 
-        // se o número de elementos não for divisível por p e for a última linha, vai ser só o resto
-        //if (argumentos->inicioL == lin[0] - 1 && argumentos->inicioC + argumentos->p > col[1])
-        //{
-        //    printf("entrou na dita condição!\n");
-        //    argumentos->p =  col[1] - (argumentos->inicioC + p);
-        //}
         argumentos->inicioC = argumentos->inicioC % col[1]; //a linha não pode ser maior do que a linha
-        printf("p = %d\n", argumentos->p);
-            printf("inicioC = %d\n",argumentos->inicioC);
-            printf("inicioL = %d\n",argumentos->inicioL);
         pthread_create(&threads[i], NULL, multMatrix, argumentos);
         pthread_join(threads[i], NULL);
         argumentos->inicioC += argumentos->p;
@@ -145,17 +134,19 @@ void* multMatrix(void* arg)
     struct argMultMatrix* arguments = (struct argMultMatrix *) arg;
     int linha = arguments->inicioL;
     int coluna = arguments->inicioC;
-    printf("coluna %d\n", coluna);
     int soma;
-    printf("p = %d\n", arguments->p);
-    printf("col = %d\n", arguments->col[1]);
+
+    clock_t t;
+    t = clock();
 
     for (int i = 0; i < arguments->p; i++)
     {
-        printf("i = %d ", i);
         if (arguments->lin[0] <= linha || arguments->col[1] <= coluna)
         {
-            printf("saiu!!\n");
+            t = clock() - t;
+            double time_taken = ((double)t)/CLOCKS_PER_SEC;
+            printf("%fs\n", time_taken);
+            printf("\n");
             pthread_exit(NULL);
         }
         if (coluna >= arguments->col[1])
@@ -170,11 +161,12 @@ void* multMatrix(void* arg)
             //resultante[linha][i + n % arguments->col[1]] += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][i + n % arguments->col[1]]; 
             soma += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][coluna]; 
         }
-        //printf("%d ", resultante[linha][i + n % arguments->col[1]]);
-        printf("%d\n", soma);
+        printf("c%d%d %d\n", linha, coluna, soma);
         coluna++;
     }
+    t = clock() - t;
+    double time_taken = ((double)t)/CLOCKS_PER_SEC;
+    printf("%fs\n", time_taken);
     printf("\n");
-    printf("Cálculos concluídos!\n");
     pthread_exit(NULL);
 }
