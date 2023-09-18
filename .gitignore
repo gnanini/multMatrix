@@ -8,7 +8,4 @@ teste2
 threads
 processos
 *.c~
-output/threads/*
-output/process/*
-output/sequencial
 sequencial2.c
