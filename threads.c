@@ -135,6 +135,8 @@ void* multMatrix(void* arg)
     int linha = arguments->inicioL;
     int coluna = arguments->inicioC;
     int soma;
+    int numeroarquivo = 0;
+    char buf[40];
 
     clock_t t;
     t = clock();
@@ -158,10 +160,13 @@ void* multMatrix(void* arg)
         // itera no que é comum às duas matrizes, já se sabe a coluna e a linha
         for (int j = 0; j < arguments->col[0]; j++) 
         {
+            numeroarquivo++;
             //resultante[linha][i + n % arguments->col[1]] += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][i + n % arguments->col[1]]; 
             soma += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][coluna]; 
         }
-        printf("c%d%d %d\n", linha, coluna, soma);
+        snprintf(buf, 40, "c%d%d %d\n", linha, coluna, soma); // armazenando no buffer de string
+        write_to_thread_file(numeroarquivo, &buf);
+        // printf("c%d%d %d\n", linha, coluna, soma);
         coluna++;
     }
     t = clock() - t;
@@ -170,3 +175,16 @@ void* multMatrix(void* arg)
     printf("\n");
     pthread_exit(NULL);
 }
+
+void write_to_thread_file(int narquivo, const char *data) {
+    char auxbuf[10];
+    snprintf(auxbuf, 10, "%d", narquivo);
+    char *filename = strcat("thread", auxbuf);
+    char *pathname = strcat("output/", filename);
+    FILE *file = fopen(pathname, "w"); // "w" mode appends to the file
+    if (file) {
+        fprintf(file, "%s\n", data);
+        fclose(file);
+    }
+}
+
