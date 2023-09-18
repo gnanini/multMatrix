@@ -174,7 +174,7 @@ void multMatrix(void* arg)
             //resultante[linha][i + n % arguments->col[1]] += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][i + n % arguments->col[1]]; 
             soma += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][coluna]; 
         }
-        printf("c%d%d %d\n", linha, coluna, soma);
+        printf("c[%d][%d] %d\n", linha, coluna, soma);
         coluna++;
     }
     t = clock() - t;

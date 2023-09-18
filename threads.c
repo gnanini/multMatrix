@@ -160,10 +160,10 @@ void* multMatrix(void* arg)
         // itera no que é comum às duas matrizes, já se sabe a coluna e a linha
         for (int j = 0; j < arguments->col[0]; j++) 
         {
-            numeroarquivo++;
             //resultante[linha][i + n % arguments->col[1]] += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][i + n % arguments->col[1]]; 
             soma += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][coluna]; 
         }
+        numeroarquivo++;
         snprintf(buf, 40, "c%d%d %d\n", linha, coluna, soma); // armazenando no buffer de string
         write_to_thread_file(numeroarquivo, &buf);
         // printf("c%d%d %d\n", linha, coluna, soma);
