@@ -102,6 +102,8 @@ int main(int argc, char **argv)
     }
 
     //Criando as threads
+    struct rusage start_usage, end_usage;
+    struct timeval start_time, end_time;
     int p = atoi(argv[3]);
     printf("p = %d\n", p);
     int nThreads = lin[0] * col[1] / p;
@@ -126,8 +128,20 @@ int main(int argc, char **argv)
         }
         printf("p = %d\n", argumentos->p);
         pthread_create(&threads[i], NULL, multMatrix, argumentos);
+
+        getrusage(RUSAGE_THREAD, &start_usage); // pega o tempo de início do uso da CPU
+        gettimeofday(&start_time, NULL); // pega o tempo de início do uso da CPU
+
         pthread_join(threads[i], NULL);
+
+        gettimeofday(&end_time, NULL); // pega o tempo de uso da CPU
+        getrusage(RUSAGE_THREAD, &end_usage); // pega o tempo de uso da CPU
+        //calculando a diferença entre início e final de uso
+        long long start_microseconds = start_time.tv_sec * 1000000 + start_time.tv_usec;
+        long long end_microseconds = end_time.tv_sec * 1000000 + end_time.tv_usec;
+        long long cpu_time_microseconds = (end_usage.ru_utime.tv_sec * 1000000 + end_usage.ru_utime.tv_usec) - (start_usage.ru_utime.tv_sec * 1000000 + start_usage.ru_utime.tv_usec);
         argumentos->inicioC += argumentos->p;
+        printf("CPU time for the thread: %lld microseconds\n", cpu_time_microseconds); // printando o tempo de uso
     }
     free(matrizes[0]);
     free(matrizes[1]);
