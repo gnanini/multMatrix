@@ -141,7 +141,7 @@ void* multMatrix(void* arg)
     THREAD++; // não conseguimos pegar a id da thread, voltava sempre a mesma então eu fiz a id delas para o nome do arquivo
     char* id = malloc(sizeof(char) * 10);
     sprintf(id, "%d", THREAD);
-    char filename[] = "output/threads/";
+    char filename[] = "output/thread/";
     strcat(filename, id);
     printf("%s\n", filename);
     FILE *file;
