@@ -148,6 +148,15 @@ void multMatrix(void* arg)
     int linha = arguments->inicioL;
     int coluna = arguments->inicioC;
     int soma;
+    // pegar o pid pra salvar no arquivo
+    pid_t pid = getpid();
+    char* id = malloc(sizeof(char) * 10);
+    sprintf(id, "%d", pid);
+    char filename[] = "output/process/";
+    strcat(filename, id);
+    printf("%s\n", filename);
+    FILE *file;
+    file = fopen(filename, "w");
 
     clock_t t;
     t = clock();
@@ -158,8 +167,10 @@ void multMatrix(void* arg)
         {
             t = clock() - t;
             double time_taken = ((double)t)/CLOCKS_PER_SEC;
-            printf("%fs\n", time_taken);
-            printf("\n");
+            //printf("%fs\n", time_taken);
+            //printf("\n");
+            fprintf(file, "%fs\n\n", time_taken);
+            fclose(file);
             exit(0);
         }
         if (coluna >= arguments->col[1])
@@ -173,12 +184,16 @@ void multMatrix(void* arg)
         {
             soma += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][coluna]; 
         }
-        printf("c[%d][%d] %d\n", linha, coluna, soma);
+        //printf("c[%d][%d] %d\n", linha, coluna, soma);
+        //salvar no arquivo
+        fprintf(file, "c[%d][%d] %d\n", linha, coluna, soma); // armazenando no buffer de string
         coluna++;
     }
     t = clock() - t;
     double time_taken = ((double)t)/CLOCKS_PER_SEC;
-    printf("%fs\n", time_taken);
-    printf("\n");
+    //printf("%fs\n", time_taken);
+    //printf("\n");
+    fprintf(file, "%fs\n\n", time_taken);
+    fclose(file);
     exit(0);
 }

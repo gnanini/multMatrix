@@ -93,9 +93,16 @@ int main(int argc, char **argv)
     {
         resultante[i] = (int*)calloc(bufferSize, sizeof(int*));
     }
+    //abrindo o arquivo
+    char filename[] = "output/sequencial";
+    printf("%s\n", filename);
+    FILE *file;
+    file = fopen(filename, "w");
+
+    clock_t t;
+    t = clock();
     
     //começar a multiplicação
-    printf("\n");
     for (int m = 0; m < lin[0]; m++)
     {
         for (int n = 0; n < col[1]; n++)
@@ -105,11 +112,22 @@ int main(int argc, char **argv)
             {
                 resultante[m][n] += matrizes[0][m][k] * matrizes[1][k][n]; 
             }
-            printf("%d\t", resultante[m][n]);
+
+            //gravando no arquivo
+
+            //printf("%d\t", resultante[m][n]);
+            fprintf(file, "c[%d][%d] %d\n", m, n, resultante[m][n]);
         }
-        printf("\n");
+        //printf("\n");
     }
-    //free(matrizes[0]);
-    //free(matrizes[1]);
+    t = clock() - t;
+    double time_taken = ((double)t)/CLOCKS_PER_SEC;
+    //printf("%fs\n", time_taken);
+    //printf("\n");
+    fprintf(file, "%fs\n\n", time_taken);
+    fclose(file);
+    
+    free(matrizes[0]);
+    free(matrizes[1]);
     return 0;
 }

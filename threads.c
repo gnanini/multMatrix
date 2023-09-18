@@ -138,10 +138,10 @@ void* multMatrix(void* arg)
     int linha = arguments->inicioL;
     int coluna = arguments->inicioC;
     int soma;
-    THREAD++;
+    THREAD++; // não conseguimos pegar a id da thread, voltava sempre a mesma então eu fiz a id delas para o nome do arquivo
     char* id = malloc(sizeof(char) * 10);
     sprintf(id, "%d", THREAD);
-    char filename[] = "output/thread_";
+    char filename[] = "output/threads/";
     strcat(filename, id);
     printf("%s\n", filename);
     FILE *file;
@@ -172,11 +172,10 @@ void* multMatrix(void* arg)
         {
             soma += arguments->matrizes[0][linha][j] * arguments->matrizes[1][j][coluna]; 
         }
-        coluna++;
-
         //salvar no arquivo
         fprintf(file, "c[%d][%d] %d\n", linha, coluna, soma); // armazenando no buffer de string
         //printf("c[%d][%d] %d\n", linha, coluna, soma);
+        coluna++;
     }
     t = clock() - t;
     double time_taken = ((double)t)/CLOCKS_PER_SEC;
