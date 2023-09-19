@@ -152,7 +152,7 @@ void multMatrix(void* arg)
     pid_t pid = getpid();
     char* id = malloc(sizeof(char) * 10);
     sprintf(id, "%d", pid);
-    char filename[] = "output/process/";
+    char filename[] = "output/processos/";
     strcat(filename, id);
     printf("%s\n", filename);
     FILE *file;
