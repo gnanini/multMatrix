@@ -2,28 +2,35 @@ import os
 
 
 dirs = ["processos", "threads"]
-tempos = []
+ps=["1280000", "960000", "640000", "320000", "2560000", "3840000", "5120000"]
 
 for directory in dirs:
-    for file in os.listdir(directory):
-        if "2560000" in file:
-            f = open(directory +"/" +file, "r")
-            tempos.append(f.readlines())
-            f.close()
-filtrados = []
-temp = ""
-for item in tempos:
-    for linha in item:
-        for char in linha:
-            if char in "01234567890.":
-                temp = temp + char
-            if char == ':':
-                temp = ""
-            if char == '\n':
-                filtrados.append(temp)
-                temp = ""
-soma = 0
-for item in filtrados:
-    soma += float(item)
-#
-print(f"media = {soma / len(filtrados)}s")
+    print(directory)
+    for p in ps:
+        tempos = ""
+        for file in os.listdir(directory):
+            if p in file:
+                print(file)
+                f = open(directory +"/" +file, "r")
+                #tempos.append(f.readlines())
+                for line in f.readlines():
+                    #print(line)
+                    tempos += line
+                f.close()
+        #print(tempos.split("\n"))
+        #print(tempos)
+        tempos = tempos.split("s\n")[:-1]
+        soma = 0
+        for item in tempos:
+            #print(item)
+            temp = ""
+            for char in item:
+                temp += char
+                if char == ':':
+                    temp = ""
+            soma += float(temp)
+        f = open(f"medias/mediaTempo-{directory}-{p}", "w")
+        #print(len(tempos))
+        media = soma / len(tempos)
+        f.write(str(media))
+        f.close()
